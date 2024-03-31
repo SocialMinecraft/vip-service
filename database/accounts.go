@@ -1,4 +1,4 @@
-package db
+package database
 
 type Account struct {
 	Id            int
