@@ -10,7 +10,7 @@ import (
 
 // comes in on kofi.payment
 func kofiPayment(db *database.Db, msg *nats.Msg) error {
-	e := kofi.Payment{}
+	e := &kofi.Payment{}
 	if err := proto.Unmarshal(msg.Data, e); err != nil {
 		return err
 	}
