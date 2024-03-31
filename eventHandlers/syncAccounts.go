@@ -49,7 +49,7 @@ func syncAccounts(nc *nats.Conn, db *database.Db, msg *nats.Msg) error {
 		return err
 	}
 	list := &protos.ListMinecraftAccountsResponse{}
-	if err = proto.Unmarshal(resp.Data); err != nil {
+	if err = proto.Unmarshal(resp.Data, list); err != nil {
 		return err
 	}
 
