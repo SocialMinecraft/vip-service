@@ -9,7 +9,7 @@ import (
 	"vip-service/github.com/SocialMinecraft/protos/vip"
 )
 
-func changeAcconut(db *database.Db, msg *nats.Msg) error {
+func ChangeAcconut(db *database.Db, msg *nats.Msg) error {
 	e := &protos.MinecraftAccountChanged{}
 	if err := proto.Unmarshal(msg.Data, e); err != nil {
 		return err
@@ -31,7 +31,7 @@ func changeAcconut(db *database.Db, msg *nats.Msg) error {
 	return err
 }
 
-func syncAccounts(nc *nats.Conn, db *database.Db, msg *nats.Msg) error {
+func SyncAccounts(nc *nats.Conn, db *database.Db, msg *nats.Msg) error {
 	var buf []byte
 	var err error
 
