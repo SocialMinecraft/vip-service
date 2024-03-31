@@ -4,14 +4,25 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+	"vip-service/github.com/SocialMinecraft/protos/vip"
 )
 
 type Membership struct {
-	Id     int
+	Id     int64
 	UserId *string
 	Email  string
 	Start  time.Time
 	End    time.Time
+}
+
+func (r *Membership) ToProto() vip.Membership {
+	return vip.Membership{
+		Id:     r.Id,
+		Email:  r.Email,
+		Start:  r.Start.Unix(),
+		Expire: r.End.Unix(),
+		UserId: r.UserId,
+	}
 }
 
 func (r *Db) AddMembership(membership Membership) error {
@@ -37,13 +48,13 @@ ON CONFLICT (email) DO UPDATE
 	return err
 }
 
-func (r *Db) ClaimMembership(membershipId int, userId string) error {
+func (r *Db) ClaimMembership(membershipId int64, userId string) error {
 	_, err := r.db.Query(
 		`
 UPDATE 
     memberships 
 SET 
-    user_id = $2,
+    user_id = $2
 WHERE
 	id = $1
 `,
@@ -98,6 +109,38 @@ WHERE
     email = $1;
 `,
 		email,
+	).Scan(
+		&re.Id,
+		&re.Email,
+		&re.UserId,
+		&re.Start,
+		&re.End,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &re, err
+}
+
+func (r *Db) GetMembershipByMinecraft(uuid string) (*Membership, error) {
+
+	var re Membership
+
+	err := r.db.QueryRow(
+		`
+SELECT
+    m.id, m.email, m.user_id, m.start, m.expire
+FROM 
+    memberships m
+INNER JOIN accounts a on m.user_id = a.user_id
+WHERE 
+    a.minecraft_uuid = $1;
+`,
+		uuid,
 	).Scan(
 		&re.Id,
 		&re.Email,

@@ -18,20 +18,34 @@ func Get(db *database.Db, msg *nats.Msg) error {
 	}
 
 	if e.UserId != nil {
-		panic("todo")
+		membership, err := db.GetMembership(*e.UserId)
+		if err != nil {
+			return err
+		}
+		return sendGetResp(msg, membership)
 	}
 
 	if e.MinecraftUuid != nil {
-		panic("todo")
+		membership, err := db.GetMembershipByMinecraft(*e.MinecraftUuid)
+		if err != nil {
+			return err
+		}
+		return sendGetResp(msg, membership)
 	}
 
 	return nil
 }
 
-func sendGetResp(msg *nats.Msg, membership *vip.Membership) error {
+func sendGetResp(msg *nats.Msg, membership *database.Membership) error {
+	var m *vip.Membership = nil
+	if membership != nil {
+		t := membership.ToProto()
+		m = &t
+	}
+
 	buf, err := proto.Marshal(&vip.GetResponse{
 		HasMembership: membership != nil,
-		Membership:    membership,
+		Membership:    m,
 	})
 	if err != nil {
 		return err
