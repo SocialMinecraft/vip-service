@@ -31,6 +31,7 @@ func ChangeAcconut(db *database.Db, msg *nats.Msg) error {
 	return err
 }
 
+// vip.sync
 func SyncAccounts(nc *nats.Conn, db *database.Db, msg *nats.Msg) error {
 	var buf []byte
 	var err error

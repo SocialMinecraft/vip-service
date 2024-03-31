@@ -7,6 +7,7 @@ import (
 	"vip-service/github.com/SocialMinecraft/protos/vip"
 )
 
+// vip.get
 func Get(db *database.Db, msg *nats.Msg) error {
 	e := &vip.GetRequest{}
 	if err := proto.Unmarshal(msg.Data, e); err != nil {
