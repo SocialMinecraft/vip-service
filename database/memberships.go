@@ -35,7 +35,7 @@ INSERT INTO
     memberships 
     (email, user_id, start, expire) 
 VALUES 
-    ($1, $2, $3, $4) 
+    (lower($1), $2, $3, $4) 
 ON CONFLICT (email) DO UPDATE 
     SET
         expire = $4
@@ -106,7 +106,7 @@ SELECT
 FROM 
     memberships
 WHERE 
-    email = $1;
+    lower(email) = lower($1);
 `,
 		email,
 	).Scan(
