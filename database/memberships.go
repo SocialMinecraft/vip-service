@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"strings"
 	"time"
 	"vip-service/github.com/SocialMinecraft/protos/vip"
 )
@@ -140,7 +141,7 @@ INNER JOIN accounts a on m.user_id = a.user_id
 WHERE 
     a.minecraft_uuid = $1;
 `,
-		uuid,
+		strings.Replace(uuid, "-", "", -1),
 	).Scan(
 		&re.Id,
 		&re.Email,
